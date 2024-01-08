@@ -11,7 +11,7 @@ export default function SignUp({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [signingUp, setSigningUp] = useState(false); 
+  const [signingUp, setSigningUp] = useState(false);
   const auth = getAuth()
   const db = getFirestore();
 
@@ -97,7 +97,7 @@ export default function SignUp({ navigation }) {
         >Sign In</Text></Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={createUser} disabled={signingUp}>
-        {signingUp ? ( 
+        {signingUp ? (
           <ActivityIndicator size="small" color="#ffffff" />
         ) : (
           <Text style={styles.buttonText}>Create</Text>
