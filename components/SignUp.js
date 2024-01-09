@@ -47,7 +47,6 @@ export default function SignUp({ navigation }) {
         score: 0,
       }
       await addDoc(collection(db, "users"), userData);
-
       alert("Account created successfully!");
       navigation.navigate('Landing Screen');
     } catch (error) {
