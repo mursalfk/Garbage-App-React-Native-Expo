@@ -32,7 +32,6 @@ export default function SignUp({ navigation }) {
       alert("Passwords do not match.");
       return;
     }
-
     try {
       setSigningUp(true);
       const userCredential = await createUserWithEmailAndPassword(
