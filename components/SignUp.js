@@ -12,7 +12,6 @@ export default function SignUp({ navigation }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [signingUp, setSigningUp] = useState(false); 
-
   const auth = getAuth()
   const db = getFirestore();
 
