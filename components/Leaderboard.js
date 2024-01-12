@@ -96,7 +96,6 @@ export default function Leaderboard({ navigation }) {
                 keyExtractor={(item, index) => index.toString()}
                 contentContainerStyle={styles.leaderboard}
             />
-
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.button} onPress={disposeGarbage}>
                     <Text style={styles.buttonText}>Dispose Garbage</Text>
