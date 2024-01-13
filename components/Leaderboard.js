@@ -49,7 +49,6 @@ export default function Leaderboard({ navigation }) {
                 });
             }
         });
-
         fetchData();
         return () => unsubscribe();
     }, []);
