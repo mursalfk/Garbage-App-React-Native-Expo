@@ -1,7 +1,6 @@
 import React from "react";
 import { TouchableOpacity, View, Image, StyleSheet, Text } from "react-native";
 import { StatusBar } from 'expo-status-bar';
-
 import landingImage from "../assets/landing-icon.png";
 
 export default function LandingScreen({ navigation }) {
