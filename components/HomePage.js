@@ -29,7 +29,6 @@ export default function HomePage({ navigation, route }) {
                 setUserName("");
             }
         });
-
         return () => unsubscribe();
     }, []);
 
