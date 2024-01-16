@@ -20,7 +20,6 @@ export default function HomePage({ navigation, route }) {
                 getDocs(collection(db, "users")).then((querySnapshot) => {
                     querySnapshot.forEach((doc) => {
                         if (doc.data().uid === uid) {
-                            setUser(doc.data());
                             setUserName(doc.data().name);
                         }
                     });
