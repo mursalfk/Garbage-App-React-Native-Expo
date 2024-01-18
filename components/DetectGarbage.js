@@ -163,6 +163,7 @@ export default function DetectGarbage({ navigation }) {
         const value = predictions.dataSync();
         const predictedClass = value.indexOf(Math.max(...value))
         setPredictResult(classes[predictedClass].charAt(0).toUpperCase() + classes[predictedClass].slice(1));
+
         const disposalInstruction = generateDisposalInstruction(classes[predictedClass]);
         setDisposalInstructions(disposalInstruction)
         updateScore();
