@@ -6,7 +6,7 @@ import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import * as FileSystem from "expo-file-system";
 import { getAuth } from "firebase/auth";
 import { db } from "../services/Config";
-import { doc, setDoc, getDoc, addDoc,  } from "firebase/firestore";
+import { doc, setDoc, getDoc,  } from "firebase/firestore";
 import { StatusBar } from 'expo-status-bar';
 
 const auth = getAuth();
