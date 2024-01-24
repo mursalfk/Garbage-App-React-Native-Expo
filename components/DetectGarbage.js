@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {Button,View,Text,StyleSheet,TouchableOpacity,Image,Vibration,ActivityIndicator,} from "react-native";
+import { Button, View, Text, StyleSheet, TouchableOpacity, Image, Vibration, ActivityIndicator, } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as tf from "@tensorflow/tfjs";
 import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
@@ -20,8 +20,8 @@ export default function DetectGarbage({ navigation }) {
     const [predictResult, setPredictResult] = useState("");
     const [disposalInstructions, setDisposalInstructions] = useState("");
     const [userData, setUserData] = useState(null);
-    const [model, setModel] = useState(null); 
-    const [modelLoaded, setModelLoaded] = useState(false); 
+    const [model, setModel] = useState(null);
+    const [modelLoaded, setModelLoaded] = useState(false);
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -126,7 +126,7 @@ export default function DetectGarbage({ navigation }) {
             setCapturedImage(data.uri);
             setIsLive(false);
             predictImage(data.uri);
-            Vibration.vibrate(); 
+            Vibration.vibrate();
         }
     };
 
@@ -167,7 +167,7 @@ export default function DetectGarbage({ navigation }) {
         const disposalInstruction = generateDisposalInstruction(classes[predictedClass]);
         setDisposalInstructions(disposalInstruction)
         updateScore();
-        Vibration.vibrate(); 
+        Vibration.vibrate();
     };
 
     const updateScore = async () => {
@@ -221,7 +221,7 @@ export default function DetectGarbage({ navigation }) {
 
     return (
         <View style={styles.container}>
-            {modelLoaded ? ( 
+            {modelLoaded ? (
                 isLive ? (
                     <View style={styles.cameraContainer}>
                         <Camera
@@ -261,7 +261,7 @@ export default function DetectGarbage({ navigation }) {
                         </View>
                     </View>
                 )
-            ) : ( 
+            ) : (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="green" />
                     <Text>Initializing Model...</Text>
