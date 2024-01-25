@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {Button,View,Text,StyleSheet,TouchableOpacity,Image,Vibration,ActivityIndicator,
-} from "react-native";
+import {Button,View,Text,StyleSheet,TouchableOpacity,Image,Vibration,ActivityIndicator,} from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as tf from "@tensorflow/tfjs";
 import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
