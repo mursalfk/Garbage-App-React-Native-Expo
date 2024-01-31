@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {Button,
-    View,
+import {Button,View,
     Text,
     StyleSheet,
     TouchableOpacity,
