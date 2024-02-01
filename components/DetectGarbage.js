@@ -14,7 +14,6 @@ import * as tf from "@tensorflow/tfjs";
 import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import * as FileSystem from "expo-file-system";
 import { getAuth } from "firebase/auth";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { db } from "../services/Config";
 import { doc, setDoc, getDoc, addDoc, collection } from "firebase/firestore";
 import { StatusBar } from 'expo-status-bar';
