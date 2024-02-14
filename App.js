@@ -27,6 +27,7 @@ export default function App() {
             console.error("Error checking login state:", error);
         }
     };
+    
 
     return (
         <NavigationContainer>
