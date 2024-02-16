@@ -40,21 +40,25 @@ export default function DetectGarbage({ navigation }) {
         setType(current => (current === CameraType.back ? CameraType.front : CameraType.Back))
     }
 
+    // Function to click a picture
+    const takePicture = async () => {
+        if (camera) {
+            const data = await camera.takePictureAsync(null);
+            console.log(data.uri);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.cameraContainer}>
                 <Camera style={styles.camera} type={type}>
                     <View style={styles.buttonsContainer}>
-                        <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
-                            <Text style={styles.text}>Flip Camera</Text>
+                        {/* Touchable opacity to click a picture */}
+                        <TouchableOpacity style={styles.leaderboardButton} onPress={takePicture}>
+                            <Text style={styles.buttonText}>Click Picture</Text>
                         </TouchableOpacity>
                     </View>
                 </Camera>
-                {/* <RNCamera
-                    style={ViewPropTypes.camera}
-                    type={RNCamera.Constants.Type.back}
-                    // other camera props
-                /> */}
             </View>
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.leaderboardButton} onPress={showLeaderboard}>
