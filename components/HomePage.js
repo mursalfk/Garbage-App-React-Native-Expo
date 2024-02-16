@@ -1,21 +1,30 @@
 import React, { useState } from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 
+import "../services/Config";
+import { getAuth, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+
+
+const auth = getAuth();
+
 export default function HomePage({ navigation }) {
 
     const disposeGarbage = () => {
-        console.log("Dispose Garbage Clicked");
         navigation.navigate('Detect Garbage');
     };
 
     const showLeaderboard = () => {
-        console.log("Leaderboard Button Clicked");
         navigation.navigate('Leaderboard');
     };
 
-    const logoutButton = () => {
-        console.log("Logout Logic Here");
-        navigation.navigate('Landing Screen');
+    const logoutButton = async () => {
+        try {
+            await auth.signOut();
+            navigation.navigate('Landing Screen');
+        } catch (error) {
+            console.error("Error logging out:", error);
+            alert("Error logging out. Please try again."); // Example error message handling
+        }
     };
 
     return (
@@ -54,13 +63,14 @@ const styles = StyleSheet.create({
         alignItems: 'stretch', // Align items along the cross axis (stretch means to fill the entire width)
     },
     button: {
-        backgroundColor: 'lightblue',
+        backgroundColor: 'green',
         paddingVertical: 15,
         marginBottom: 10, // Add margin bottom to create space between buttons
         borderRadius: 5,
         alignItems: 'center',
     },
     buttonText: {
+        color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
     },

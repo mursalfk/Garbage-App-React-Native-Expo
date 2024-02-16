@@ -1,31 +1,32 @@
-import React, { useState } from "react";
-import { Button, View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
-import { RNCamera } from "react-native-camera";
-import { ViewPropTypes } from 'deprecated-react-native-prop-types';
+import React, { useState, useRef } from "react";
+import { Button, View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Camera, CameraType } from 'expo-camera';
 
 
 export default function DetectGarbage({ navigation }) {
     const [type, setType] = useState(CameraType.back);
     const [permission, requestPermission] = Camera.useCameraPermissions();
+    const [isLive, setIsLive] = useState(true);
+    const cameraRef = useRef(null);
+    const [capturedImage, setCapturedImage] = useState(null);
 
     if (!permission) {
-        return ( <View style={styles.container}>
-            <Text>No access to camera</Text>
-            <Button title="Request Camera Permission" onPress={requestPermission} />
-        </View>
+        return (
+            <View style={styles.container}>
+                <Text>No access to camera</Text>
+                <Button title="Request Camera Permission" onPress={requestPermission} />
+            </View>
         );
     }
 
     if (!permission.granted) {
-        return ( <View style={styles.container}>
-            <Text>Permission not granted</Text>
-            <Button title="Request Camera Permission" onPress={requestPermission} />
-        </View>
+        return (
+            <View style={styles.container}>
+                <Text>Permission not granted</Text>
+                <Button title="Request Camera Permission" onPress={requestPermission} />
+            </View>
         );
     }
-
-
 
     const showLeaderboard = () => {
         console.log("Leaderboard Button Clicked");
@@ -40,27 +41,43 @@ export default function DetectGarbage({ navigation }) {
         setType(current => (current === CameraType.back ? CameraType.front : CameraType.Back))
     }
 
-    // Function to click a picture
     const takePicture = async () => {
-        if (camera) {
-            const data = await camera.takePictureAsync(null);
-            console.log(data.uri);
+        if (cameraRef.current) {
+            const options = { quality: 0.5, base64: true };
+            const data = await cameraRef.current.takePictureAsync(options);
+            setCapturedImage(data.uri);
+            setIsLive(false);
         }
+    };
+
+    const retakePicture = () => {
+        setCapturedImage(null);
+        setIsLive(true);
     };
 
     return (
         <View style={styles.container}>
-            <View style={styles.cameraContainer}>
-                <Camera style={styles.camera} type={type}>
+            {isLive ? (
+                <View style={styles.cameraContainer}>
+                    <Camera style={styles.camera} type={type} ref={cameraRef}>
+                    </Camera>
                     <View style={styles.buttonsContainer}>
-                        {/* Touchable opacity to click a picture */}
-                        <TouchableOpacity style={styles.leaderboardButton} onPress={takePicture}>
+                        <TouchableOpacity style={styles.clickPhotoButton} onPress={takePicture}>
                             <Text style={styles.buttonText}>Click Picture</Text>
                         </TouchableOpacity>
                     </View>
-                </Camera>
-            </View>
-            <View style={styles.buttonsContainer}>
+                </View>
+            ) : (
+                <View style={styles.imageContainer}>
+                    <Image source={{ uri: capturedImage }} style={styles.capturedImage} />
+                    <View style={styles.buttonsContainer}>
+                        <TouchableOpacity style={styles.retakeButton} onPress={retakePicture}>
+                            <Text style={styles.buttonText}>Retake</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+            <View style={styles.bottomButtonsContainer}>
                 <TouchableOpacity style={styles.leaderboardButton} onPress={showLeaderboard}>
                     <Text style={styles.buttonText}>Leaderboard</Text>
                 </TouchableOpacity>
@@ -79,9 +96,14 @@ const styles = StyleSheet.create({
     },
     cameraContainer: {
         flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     camera: {
-        flex: 1,
+        display: 'flex',
+        height: '60%',
+        width: '100%',
+        justifyContent: 'center',
     },
     buttonsContainer: {
         position: 'absolute',
@@ -89,12 +111,40 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         flexDirection: 'row',
+        justifyContent: 'center',
+        paddingBottom: 20,
+    },
+    clickPhotoButton: {
+        backgroundColor: 'green',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25,
+    },
+    imageContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    capturedImage: {
+        display: 'flex',
+        height: '60%',
+        width: '100%',
+        justifyContent: 'center',
+    },
+    retakeButton: {
+        backgroundColor: 'green',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 25,
+    },
+    bottomButtonsContainer: {
+        flexDirection: 'row',
         justifyContent: 'space-between',
         paddingHorizontal: 20,
         paddingBottom: 20,
     },
     leaderboardButton: {
-        backgroundColor: 'blue',
+        backgroundColor: 'green',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,

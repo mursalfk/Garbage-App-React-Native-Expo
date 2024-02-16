@@ -15,17 +15,43 @@ export default function SignUp({ navigation }) {
 
   const auth = getAuth()
 
-  const createUser = () => {
-    console.log(email, password)
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        onChangeLoggedInUser(user.email);
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-      });
+  const createUser = async () => {
+    // Input validation (optional but recommended)
+    if (!name.trim()) {
+      alert("Please enter your name.");
+      return;
+    }
+    if (!email.trim() || !/^\S+@\S+\.\S+$/.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters long.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    try {
+      // Create user using Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      )
+      const user = userCredential.user;
+      alert("Account created successfully!"); 
+      navigation.navigate('Landing Screen');
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+
+      console.error("Error creating user:", errorCode, errorMessage);
+      // Handle signup errors appropriately (e.g., display error messages)
+      alert(errorMessage); // Example error message handling
+    }
   };
 
   return (
@@ -111,7 +137,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   button: {
-    backgroundColor: 'lightblue',
+    backgroundColor: 'green',
     width: '80%',
     paddingVertical: 15,
     borderRadius: 5,
@@ -120,6 +146,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonText: {
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
   },

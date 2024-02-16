@@ -1,18 +1,41 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from "react-native";
+// import firebase from 'firebase/app';
+// import 'firebase/auth';
+
+import "../services/Config";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+
 
 // Import your logo image
 import logoImage from "../assets/icon.png"; // Replace with the actual path to your image
+
+const auth = getAuth();
 
 export default function Login({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignIn = () => {
+  const checking = () => {
     // Here you can add your sign-in logic
     console.log("Signing in with:", username, password);
     // Example navigation to another screen
     navigation.navigate('HomePage');
+  };
+
+  const handleSignIn = async () => {
+    signInWithEmailAndPassword(auth, username, password)
+      .then(async (userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        alert("Signed in successfully!");
+        navigation.navigate('HomePage');
+        onChangeLoggedInUser(user.username);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
   };
 
   return (
@@ -85,7 +108,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: 'lightblue',
+    backgroundColor: 'green',
     width: '80%',
     paddingVertical: 15,
     borderRadius: 5,
@@ -93,6 +116,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
   },

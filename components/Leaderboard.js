@@ -3,15 +3,13 @@ import { Button, View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView
 
 export default function Leaderboard({ navigation }) {
     const disposeGarbage = () => {
-        console.log("Dispose Garbage Clicked");
-        // navigation.navigate('HomePage');
+        navigation.navigate('Detect Garbage');
     };
 
     const homePageButton = () => {
         navigation.navigate('HomePage');
     };
 
-    // Sample data for the leaderboard
     const leaderboardData = [
         { name: "User 1", score: 100 },
         { name: "User 2", score: 90 },
@@ -106,17 +104,28 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     buttonsContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        paddingBottom: 20,
+        paddingTop: 20,
+        borderTopWidth: 1,
+        borderTopColor: '#ccc',
+        paddingHorizontal: 20,
+        backgroundColor: 'rgb(255, 255, 255)',
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
     button: {
-        backgroundColor: 'blue',
+        backgroundColor: 'green',
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,
     },
     buttonText: {
-        color: '#fff',
-        fontSize: 16,
+        color: 'white',
+        fontWeight: 'bold',
     },
 });

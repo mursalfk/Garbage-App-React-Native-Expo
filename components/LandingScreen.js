@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
         width: '80%',
     },
     button: {
-        backgroundColor: 'lightblue',
+        backgroundColor: 'green',
         paddingVertical: 15,
         borderRadius: 5,
         alignItems: 'center',
@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     buttonText: {
+        color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
     },
@@ -59,7 +60,6 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         width: '80%',
         textAlign: 'center',
-        // bold
         fontWeight: 'bold',
     },
 });
