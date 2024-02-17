@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Button, View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Camera, CameraType } from 'expo-camera';
+import * as tf from "@tensorflow/tfjs";
 
 
 export default function DetectGarbage({ navigation }) {
@@ -47,8 +48,14 @@ export default function DetectGarbage({ navigation }) {
             const data = await cameraRef.current.takePictureAsync(options);
             setCapturedImage(data.uri);
             setIsLive(false);
+            predictImage()
         }
     };
+
+    const predictImage = async () => {
+        const model = await tf.loadLayersModel("../model/model.json")
+        console.log(model)
+    }
 
     const retakePicture = () => {
         setCapturedImage(null);
