@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
     Button,
     View,
@@ -9,6 +9,11 @@ import {
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as tf from "@tensorflow/tfjs";
+import * as FileSystem from "expo-file-system";
+import { bundleResourceIO } from "@tensorflow/tfjs-react-native";
+
+const modelJSON = require("../model/model.json");
+const modelWeights = require("../model/weights.bin");
 
 export default function DetectGarbage({ navigation }) {
     const [type, setType] = useState(CameraType.back);
@@ -16,6 +21,19 @@ export default function DetectGarbage({ navigation }) {
     const [isLive, setIsLive] = useState(true);
     const cameraRef = useRef(null);
     const [capturedImage, setCapturedImage] = useState(null);
+
+    useEffect(() => {
+        const loadModel = async () => {
+            // await tf.setBackend("cpu");
+            const model = await tf
+                .loadLayersModel(bundleResourceIO(modelJSON, modelWeights))
+                .catch((e) => {
+                    console.log("[LOADING ERROR] info:", e);
+                });
+            console.log("model loaded");
+        };
+        loadModel();
+    }, []);
 
     if (!permission) {
         return (
@@ -62,14 +80,18 @@ export default function DetectGarbage({ navigation }) {
             const data = await cameraRef.current.takePictureAsync(options);
             setCapturedImage(data.uri);
             setIsLive(false);
-            predictImage();
+            // predictImage();
         }
     };
 
-    const predictImage = async () => {
-        const model = await tf.loadLayersModel("model/model.json");
-        console.log("model loaded");
-    };
+    // const predictImage = async () => {
+    //     const model = await tf
+    //         .loadLayersModel(bundleResourceIO(modelJSON, modelWeights))
+    //         .catch((e) => {
+    //             console.log("[LOADING ERROR] info:", e);
+    //         });
+    //     console.log("model loaded");
+    // };
 
     const retakePicture = () => {
         setCapturedImage(null);
