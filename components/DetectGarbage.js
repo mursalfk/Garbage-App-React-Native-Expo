@@ -22,18 +22,18 @@ export default function DetectGarbage({ navigation }) {
     const cameraRef = useRef(null);
     const [capturedImage, setCapturedImage] = useState(null);
 
-    useEffect(() => {
-        const loadModel = async () => {
-            // await tf.setBackend("cpu");
-            const model = await tf
-                .loadLayersModel(bundleResourceIO(modelJSON, modelWeights))
-                .catch((e) => {
-                    console.log("[LOADING ERROR] info:", e);
-                });
-            console.log("model loaded");
-        };
-        loadModel();
-    }, []);
+    // useEffect(() => {
+    //     const loadModel = async () => {
+    //         // await tf.setBackend("cpu");
+    //         const model = await tf
+    //             .loadLayersModel(bundleResourceIO(modelJSON, modelWeights))
+    //             .catch((e) => {
+    //                 console.log("[LOADING ERROR] info:", e);
+    //             });
+    //         console.log("model loaded");
+    //     };
+    //     loadModel();
+    // }, []);
 
     if (!permission) {
         return (

@@ -8,12 +8,27 @@ import Leaderboard from "./components/Leaderboard";
 import DetectGarbage from "./components/DetectGarbage";
 import { useEffect } from "react";
 import TensorFlowInitializer from "./TensorFlowInitializer";
+import { bundleResourceIO } from "@tensorflow/tfjs-react-native";
+import * as tf from "@tensorflow/tfjs";
+
+const modelJSON = require("./model/model.json");
+const modelWeights = require("./model/weights.bin");
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
     useEffect(() => {
         TensorFlowInitializer();
+        const loadModel = async () => {
+            // await tf.setBackend("cpu");
+            const model = await tf
+                .loadGraphModel(bundleResourceIO(modelJSON, modelWeights))
+                .catch((e) => {
+                    console.log("[LOADING ERROR] info:", e);
+                });
+            console.log("model loaded");
+        };
+        loadModel();
     }, []);
     return (
         <NavigationContainer>
