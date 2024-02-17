@@ -30,16 +30,16 @@ export default function Login({ navigation }) {
         // Signed in
         const user = userCredential.user;
         console.log("Signed in successfully!", user.uid)
-        const usersCollection = collection(db, "users", user.uid);
-        // console.log(usersCollection.id);
-        const usersSnapshot = await getDocs(usersCollection);
+        // const usersCollection = collection(db, "users", user.uid);
+        // // console.log(usersCollection.id);
+        // const usersSnapshot = await getDocs(usersCollection);
         
-        usersSnapshot.forEach((doc) => {
-          console.log(doc.id, " => ", doc.data());
-        });
+        // usersSnapshot.forEach((doc) => {
+        //   console.log(doc.id, " => ", doc.data());
+        // });
         alert("Signed in successfully!");
         navigation.navigate('HomePage');
-        onChangeLoggedInUser(user.username);
+        // onChangeLoggedInUser(user.username);
       })
       .catch((error) => {
         const errorCode = error.code;
