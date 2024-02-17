@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from "reac
 
 import "../services/Config";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, getFirestore, collection, addDoc, setDoc } from "firebase/firestore";
 
 // Import your logo image
 import logoImage from "../assets/icon.png"; // Replace with the actual path to your image
@@ -14,6 +15,7 @@ export default function SignUp({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const auth = getAuth()
+  const db = getFirestore();
 
   const createUser = async () => {
     // Input validation (optional but recommended)
@@ -42,7 +44,17 @@ export default function SignUp({ navigation }) {
         password
       )
       const user = userCredential.user;
-      alert("Account created successfully!"); 
+      const userData = {
+        name: name,
+        email: email,
+        uid: user.uid,
+        score: 0,
+      }
+      await addDoc(collection(db, "users"), userData);
+
+      await setDoc(doc(db, "users", user.uid), userData);
+
+      alert("Account created successfully!");
       navigation.navigate('Landing Screen');
     } catch (error) {
       const errorCode = error.code;

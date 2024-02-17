@@ -1,13 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 
 import "../services/Config";
-import { getAuth, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 
 
 const auth = getAuth();
 
 export default function HomePage({ navigation }) {
+    const [userName, setUserName] = useState("");
+
+    useEffect(() => {
+        // Subscribe to authentication state changes to get the current user's information
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                setUserName(user.displayName); // Set the user's name
+            } else {
+                // User is signed out
+                setUserName(""); // Clear the user's name
+            }
+        });
+
+        // Clean up subscription on unmount
+        return () => unsubscribe();
+    }, []); // Empty dependency array ensures this effect runs only once on component mount
 
     const disposeGarbage = () => {
         navigation.navigate('Detect Garbage');
@@ -29,7 +46,9 @@ export default function HomePage({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Welcome</Text>
+            <Text style={styles.title}>Welcome
+                {/* User's Name */}
+            </Text>
 
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={disposeGarbage}>

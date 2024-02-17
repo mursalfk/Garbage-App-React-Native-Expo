@@ -5,6 +5,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from "reac
 
 import "../services/Config";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { doc, collection, getDocs } from "firebase/firestore"; 
 
 
 // Import your logo image
@@ -28,6 +29,14 @@ export default function Login({ navigation }) {
       .then(async (userCredential) => {
         // Signed in
         const user = userCredential.user;
+        console.log("Signed in successfully!", user.uid)
+        const usersCollection = collection(db, "users", user.uid);
+        // console.log(usersCollection.id);
+        const usersSnapshot = await getDocs(usersCollection);
+        
+        usersSnapshot.forEach((doc) => {
+          console.log(doc.id, " => ", doc.data());
+        });
         alert("Signed in successfully!");
         navigation.navigate('HomePage');
         onChangeLoggedInUser(user.username);
@@ -35,6 +44,7 @@ export default function Login({ navigation }) {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+        alert("Error signing in. Please try again."); // Example error message handling
       });
   };
 
@@ -45,7 +55,7 @@ export default function Login({ navigation }) {
       <View style={styles.formContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Username"
+          placeholder="Email"
           value={username}
           onChangeText={setUsername}
         />
