@@ -8,32 +8,15 @@ import {
     Image,
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
-import * as tf from "@tensorflow/tfjs";
-import * as FileSystem from "expo-file-system";
-import { bundleResourceIO } from "@tensorflow/tfjs-react-native";
-
-const modelJSON = require("../model/model.json");
-const modelWeights = require("../model/weights.bin");
 
 export default function DetectGarbage({ navigation }) {
+    const { model } = navigation.params;
+    console.log("Model from detect garbage", model);
     const [type, setType] = useState(CameraType.back);
     const [permission, requestPermission] = Camera.useCameraPermissions();
     const [isLive, setIsLive] = useState(true);
     const cameraRef = useRef(null);
     const [capturedImage, setCapturedImage] = useState(null);
-
-    // useEffect(() => {
-    //     const loadModel = async () => {
-    //         // await tf.setBackend("cpu");
-    //         const model = await tf
-    //             .loadLayersModel(bundleResourceIO(modelJSON, modelWeights))
-    //             .catch((e) => {
-    //                 console.log("[LOADING ERROR] info:", e);
-    //             });
-    //         console.log("model loaded");
-    //     };
-    //     loadModel();
-    // }, []);
 
     if (!permission) {
         return (

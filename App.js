@@ -6,27 +6,33 @@ import LandingScreen from "./components/LandingScreen";
 import HomePage from "./components/HomePage";
 import Leaderboard from "./components/Leaderboard";
 import DetectGarbage from "./components/DetectGarbage";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import TensorFlowInitializer from "./TensorFlowInitializer";
 import { bundleResourceIO } from "@tensorflow/tfjs-react-native";
 import * as tf from "@tensorflow/tfjs";
 
 const modelJSON = require("./model/model.json");
-const modelWeights = require("./model/weights.bin");
+// const modelWeight1 = require("./model/group1-shard1of3.bin");
+// const modelWeight2 = require("./model/group1-shard3of3.bin");
+// const modelWeight3 = require("./model/group1-shard3of3.bin");
+const weight = require("./model/weights.bin");
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+    const [model, setModel] = useState(null);
     useEffect(() => {
         TensorFlowInitializer();
         const loadModel = async () => {
-            // await tf.setBackend("cpu");
-            const model = await tf
-                .loadGraphModel(bundleResourceIO(modelJSON, modelWeights))
-                .catch((e) => {
-                    console.log("[LOADING ERROR] info:", e);
-                });
-            console.log("model loaded");
+            try {
+                const model = await tf.loadGraphModel(
+                    bundleResourceIO(modelJSON, [weight])
+                );
+                console.log("model loaded");
+                setModel(model);
+            } catch (e) {
+                console.log("[LOADING ERROR] info:", e);
+            }
         };
         loadModel();
     }, []);
