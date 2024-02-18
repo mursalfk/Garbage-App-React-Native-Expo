@@ -16,8 +16,8 @@ With its innovative approach to waste management and environmental education, th
 
 ## Screenshots
 
-![Screenshot 1](AppScreenshots/Credits.png)
-![Screenshot 2](AppScreenshots/LandingScreen.png)
+![Screenshot 1](AppScreenshots/Credits.png | width=50)
+![Screenshot 2](AppScreenshots/LandingScreen.png | width=50)
 
 ## How to Run
 
