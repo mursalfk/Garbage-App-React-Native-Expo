@@ -12,10 +12,20 @@ import { bundleResourceIO } from "@tensorflow/tfjs-react-native";
 import * as tf from "@tensorflow/tfjs";
 
 const modelJSON = require("./model/model.json");
-// const modelWeight1 = require("./model/group1-shard1of3.bin");
-// const modelWeight2 = require("./model/group1-shard3of3.bin");
-// const modelWeight3 = require("./model/group1-shard3of3.bin");
-const weight = require("./model/weights.bin");
+const modelWeight1 = require("./model/group1-shard1of13.bin");
+const modelWeight2 = require("./model/group1-shard2of13.bin");
+const modelWeight3 = require("./model/group1-shard3of13.bin");
+const modelWeight4 = require("./model/group1-shard4of13.bin");
+const modelWeight5 = require("./model/group1-shard5of13.bin");
+const modelWeight6 = require("./model/group1-shard6of13.bin");
+const modelWeight7 = require("./model/group1-shard7of13.bin");
+const modelWeight8 = require("./model/group1-shard8of13.bin");
+const modelWeight9 = require("./model/group1-shard9of13.bin");
+const modelWeight10 = require("./model/group1-shard10of13.bin");
+const modelWeight11 = require("./model/group1-shard11of13.bin");
+const modelWeight12 = require("./model/group1-shard12of13.bin");
+const modelWeight13 = require("./model/group1-shard13of13.bin");
+// const weight = require("./model/weights.bin");
 
 const Stack = createNativeStackNavigator();
 
@@ -26,7 +36,21 @@ export default function App() {
         const loadModel = async () => {
             try {
                 const model = await tf.loadGraphModel(
-                    bundleResourceIO(modelJSON, [weight])
+                    bundleResourceIO(modelJSON, [
+                        modelWeight1,
+                        modelWeight2,
+                        modelWeight3,
+                        modelWeight4,
+                        modelWeight5,
+                        modelWeight6,
+                        modelWeight7,
+                        modelWeight8,
+                        modelWeight9,
+                        modelWeight10,
+                        modelWeight11,
+                        modelWeight12,
+                        modelWeight13,
+                    ])
                 );
                 console.log("model loaded");
                 setModel(model);
@@ -44,7 +68,11 @@ export default function App() {
                 <Stack.Screen name="SignUp" component={SignUp} />
                 <Stack.Screen name="HomePage" component={HomePage} />
                 <Stack.Screen name="Leaderboard" component={Leaderboard} />
-                <Stack.Screen name="Detect Garbage" component={DetectGarbage} />
+                <Stack.Screen
+                    name="Detect Garbage"
+                    component={DetectGarbage}
+                    initialParams={{ model }}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );

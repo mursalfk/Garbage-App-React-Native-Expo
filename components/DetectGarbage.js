@@ -8,10 +8,13 @@ import {
     Image,
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
+import * as tf from "@tensorflow/tfjs";
+import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
+import * as FileSystem from "expo-file-system";
 
-export default function DetectGarbage({ navigation }) {
-    const { model } = navigation.params;
-    console.log("Model from detect garbage", model);
+export default function DetectGarbage({ navigation, route }) {
+    const { model } = route.params;
+    if (model) console.log("model received");
     const [type, setType] = useState(CameraType.back);
     const [permission, requestPermission] = Camera.useCameraPermissions();
     const [isLive, setIsLive] = useState(true);
@@ -63,18 +66,53 @@ export default function DetectGarbage({ navigation }) {
             const data = await cameraRef.current.takePictureAsync(options);
             setCapturedImage(data.uri);
             setIsLive(false);
-            // predictImage();
+            predictImage(data.uri);
         }
     };
 
-    // const predictImage = async () => {
-    //     const model = await tf
-    //         .loadLayersModel(bundleResourceIO(modelJSON, modelWeights))
-    //         .catch((e) => {
-    //             console.log("[LOADING ERROR] info:", e);
-    //         });
-    //     console.log("model loaded");
-    // };
+    const transformImageToTensor = async (uri) => {
+        console.log(uri);
+        //.ts: const transformImageToTensor = async (uri:string):Promise<tf.Tensor>=>{
+        //read the image as base64
+        const img64 = await FileSystem.readAsStringAsync(uri, {
+            encoding: FileSystem.EncodingType.Base64,
+        });
+        const imgBuffer = tf.util.encodeString(img64, "base64").buffer;
+        const raw = new Uint8Array(imgBuffer);
+        let imgTensor = decodeJpeg(raw);
+        // const scalar = tf.scalar(255);
+        //resize the image
+        imgTensor = tf.image.resizeNearestNeighbor(imgTensor, [224, 224]);
+        //normalize; if a normalization layer is in the model, this step can be skipped
+        // const tensorScaled = imgTensor.div(scalar);
+        //final shape of the rensor
+        imgTensor = tf.cast(imgTensor, "float32");
+        const img = tf.reshape(imgTensor, [1, 224, 224, 3]);
+        return img;
+    };
+
+    const predictImage = async (uri) => {
+        console.log("predict", uri);
+        const imgTensor = await transformImageToTensor(uri);
+        const classes = {
+            0: "battery",
+            1: "biological",
+            2: "brown-glass",
+            3: "cardboard",
+            4: "clothes",
+            5: "green-glass",
+            6: "metal",
+            7: "paper",
+            8: "plastic",
+            9: "shoes",
+            10: "trash",
+            11: "white-glass",
+        };
+        const predictions = await model.predict(imgTensor);
+        const value = predictions.dataSync();
+        const predictedClass = value.indexOf(Math.max(...value))
+        console.log("Predictions", classes[predictedClass]);
+    };
 
     const retakePicture = () => {
         setCapturedImage(null);
