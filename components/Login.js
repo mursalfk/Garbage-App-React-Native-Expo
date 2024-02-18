@@ -1,15 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from "react-native";
-// import firebase from 'firebase/app';
-// import 'firebase/auth';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import "../services/Config";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, collection, getDocs } from "firebase/firestore"; 
-
-
-// Import your logo image
-import logoImage from "../assets/icon.png"; // Replace with the actual path to your image
+import logoImage from "../assets/icon.png";
 
 const auth = getAuth();
 
@@ -17,34 +11,35 @@ export default function Login({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const checking = () => {
-    // Here you can add your sign-in logic
-    console.log("Signing in with:", username, password);
-    // Example navigation to another screen
-    navigation.navigate('HomePage');
+  useEffect(() => {
+    checkLoginState();
+  }, []);
+
+  const checkLoginState = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem("userToken");
+      if (userToken) {
+        navigation.navigate("HomePage");
+        navigation.navigate('HomePage', { uid: userToken });
+      }
+    } catch (error) {
+      console.error("Error checking login state:", error);
+    }
   };
 
   const handleSignIn = async () => {
     signInWithEmailAndPassword(auth, username, password)
       .then(async (userCredential) => {
-        // Signed in
         const user = userCredential.user;
-        console.log("Signed in successfully!", user.uid)
-        // const usersCollection = collection(db, "users", user.uid);
-        // // console.log(usersCollection.id);
-        // const usersSnapshot = await getDocs(usersCollection);
-        
-        // usersSnapshot.forEach((doc) => {
-        //   console.log(doc.id, " => ", doc.data());
-        // });
         alert("Signed in successfully!");
-        navigation.navigate('HomePage');
-        // onChangeLoggedInUser(user.username);
+        const uid = user.uid;
+        await AsyncStorage.setItem("userToken", uid);
+        navigation.navigate('HomePage', { uid });
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        alert("Error signing in. Please try again."); // Example error message handling
+        alert("Error signing in. Please try again.");
       });
   };
 
@@ -89,9 +84,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   logo: {
-    width: 100, // Adjust the width and height as needed for your logo
+    width: 100,
     height: 100,
-    borderRadius: 50, // Make it circular by setting half of the width/height as the border radius
+    borderRadius: 50,
     marginBottom: 20,
   },
   title: {

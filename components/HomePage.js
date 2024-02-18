@@ -1,30 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
-
-import "../services/Config";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { db } from "../services/Config";
+import { collection, getDocs } from "firebase/firestore";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const auth = getAuth();
 
-export default function HomePage({ navigation }) {
+export default function HomePage({ navigation, route }) {
+
     const [userName, setUserName] = useState("");
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        // Subscribe to authentication state changes to get the current user's information
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in
-                setUserName(user.displayName); // Set the user's name
+                const uid = user.uid;
+                getDocs(collection(db, "users")).then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        if (doc.data().uid === uid) {
+                            setUser(doc.data());
+                            setUserName(doc.data().name);
+                        }
+                    });
+                });
+                setUserName(user.displayName);
             } else {
-                // User is signed out
-                setUserName(""); // Clear the user's name
+                setUserName("");
             }
         });
 
-        // Clean up subscription on unmount
         return () => unsubscribe();
-    }, []); // Empty dependency array ensures this effect runs only once on component mount
+    }, []);
 
     const disposeGarbage = () => {
         navigation.navigate('Detect Garbage');
@@ -34,28 +41,34 @@ export default function HomePage({ navigation }) {
         navigation.navigate('Leaderboard');
     };
 
+    const navigateCredits = () => {
+        navigation.navigate('Credits');
+    };
+
     const logoutButton = async () => {
         try {
             await auth.signOut();
+            setUser(null);
             navigation.navigate('Landing Screen');
+            await AsyncStorage.removeItem('userToken');
         } catch (error) {
             console.error("Error logging out:", error);
-            alert("Error logging out. Please try again."); // Example error message handling
+            alert("Error logging out. Please try again.");
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Welcome
-                {/* User's Name */}
-            </Text>
-
+            <Text style={styles.title}>Welcome <Text>{userName}</Text></Text>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={disposeGarbage}>
                     <Text style={styles.buttonText}>Dispose Garbage</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={showLeaderboard}>
                     <Text style={styles.buttonText}>Leaderboard</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={navigateCredits}>
+                    <Text style={styles.buttonText}>Credits</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={logoutButton}>
                     <Text style={styles.buttonText}>Logout</Text>
@@ -78,13 +91,13 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     buttonContainer: {
-        width: '80%', // Set the width to 80% of the parent container
-        alignItems: 'stretch', // Align items along the cross axis (stretch means to fill the entire width)
+        width: '80%',
+        alignItems: 'stretch',
     },
     button: {
         backgroundColor: 'green',
         paddingVertical: 15,
-        marginBottom: 10, // Add margin bottom to create space between buttons
+        marginBottom: 10,
         borderRadius: 5,
         alignItems: 'center',
     },

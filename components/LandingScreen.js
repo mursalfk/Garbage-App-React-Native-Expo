@@ -1,8 +1,7 @@
 import React from "react";
 import { TouchableOpacity, View, Image, StyleSheet, Text } from "react-native";
 
-// Import your image
-import landingImage from "../assets/landing-icon.png"; // Replace with the actual path to your image
+import landingImage from "../assets/landing-icon.png";
 
 export default function LandingScreen({ navigation }) {
     return (
@@ -35,9 +34,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     image: {
-        width: '75%', // Adjust the width as needed
-        height: "20%", // Adjust the height as needed
-        marginBottom: 20, // Add margin bottom to create space between the image and buttons
+        width: '75%',
+        height: "20%",
+        marginBottom: 20,
     },
     buttonContainer: {
         width: '80%',

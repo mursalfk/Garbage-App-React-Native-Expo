@@ -1,7 +1,45 @@
-import React, { useState } from "react";
-import { Button, View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, FlatList } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Animated } from "react-native";
+import { db } from "../services/Config";
+import { collection, getDocs } from "firebase/firestore";
 
 export default function Leaderboard({ navigation }) {
+    const [leaderboardDataDB, setLeaderboardDataDB] = useState([]);
+    const [animatedValues, setAnimatedValues] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "users"));
+                const data = [];
+                querySnapshot.forEach((doc) => {
+                    data.push({ name: doc.data().name, score: doc.data().score });
+                });
+                data.sort((a, b) => b.score - a.score);
+                setLeaderboardDataDB(data);
+                setAnimatedValues(Array(data.length).fill(new Animated.Value(0)));
+            } catch (error) {
+                console.error("Error fetching leaderboard data:", error);
+            }
+        };
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        animateRows();
+    }, [animatedValues]);
+
+    const animateRows = () => {
+        animatedValues.forEach((value, index) => {
+            Animated.timing(value, {
+                toValue: 1,
+                duration: 500,
+                delay: index * 100,
+                useNativeDriver: true,
+            }).start();
+        });
+    };
+
     const disposeGarbage = () => {
         navigation.navigate('Detect Garbage');
     };
@@ -10,61 +48,25 @@ export default function Leaderboard({ navigation }) {
         navigation.navigate('HomePage');
     };
 
-    const leaderboardData = [
-        { name: "User 1", score: 100 },
-        { name: "User 2", score: 90 },
-        { name: "User 3", score: 80 },
-        { name: "User 4", score: 70 },
-        { name: "User 1", score: 100 },
-        { name: "User 2", score: 90 },
-        { name: "User 3", score: 80 },
-        { name: "User 4", score: 70 },
-        { name: "User 1", score: 100 },
-        { name: "User 2", score: 90 },
-        { name: "User 3", score: 80 },
-        { name: "User 4", score: 70 },
-        { name: "User 1", score: 100 },
-        { name: "User 2", score: 90 },
-        { name: "User 3", score: 80 },
-        { name: "User 4", score: 70 },
-        { name: "User 1", score: 100 },
-        { name: "User 2", score: 90 },
-        { name: "User 3", score: 80 },
-        { name: "User 4", score: 70 },
-        { name: "User 1", score: 100 },
-        { name: "User 2", score: 90 },
-        { name: "User 3", score: 80 },
-        { name: "User 4", score: 70 },
-        { name: "User 1", score: 100 },
-        { name: "User 2", score: 90 },
-        { name: "User 3", score: 80 },
-        { name: "User 4", score: 70 },
-        { name: "User 1", score: 100 },
-        { name: "User 2", score: 90 },
-        { name: "User 3", score: 80 },
-        { name: "User 4", score: 70 },
-        // Add more data as needed
-    ];
-
     return (
         <View style={styles.container}>
             {/* Leaderboard title */}
             <Text style={styles.title}>Leaderboard</Text>
-            
+
             {/* Leaderboard */}
             <View style={styles.leaderboard}>
                 <FlatList
-                    data={leaderboardData}
-                    renderItem={({ item }) => (
-                        <View style={styles.leaderboardItem}>
-                            <Text style={styles.leaderboardText}>{item.name}</Text>
-                            <Text style={styles.leaderboardText}>{item.score}</Text>
-                        </View>
+                    data={leaderboardDataDB}
+                    renderItem={({ item, index }) => (
+                        <Animated.View style={[styles.leaderboardItem(index), { opacity: animatedValues[index] }]}>
+                            <Text style={styles.leaderboardText(index)}>{item.name}</Text>
+                            <Text style={styles.leaderboardText(index)}>{item.score}</Text>
+                        </Animated.View>
                     )}
                     keyExtractor={(item, index) => index.toString()}
                 />
             </View>
-            
+
             {/* Buttons */}
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.button} onPress={disposeGarbage}>
@@ -85,24 +87,58 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     title: {
-        fontSize: 24,
+        fontSize: 30,
+        fontWeight: 'bold',
+        letterSpacing: 2,
         marginBottom: 20,
+        marginTop: 20,
         textAlign: 'center',
+        backgroundColor: 'green',
+        width: '60%',
+        alignSelf: 'center',
+        padding: 10,
+        borderRadius: 10,
+        color: 'white',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     leaderboard: {
         flex: 1,
         marginBottom: 20,
+        width: '100%',
+        paddingLeft: 10,
+        paddingRight: 10,
     },
-    leaderboardItem: {
+    leaderboardItem: (index) => ({
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
-    },
-    leaderboardText: {
-        fontSize: 16,
-    },
+        backgroundColor: index === 0 ? '#006400' : index === 1 ? '#3CB371' : index === 2 ? '#90EE90' : '#d4d4d4',
+        borderRadius: 10,
+        marginBottom: 10,
+        paddingHorizontal: 15,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    }),
+    leaderboardText: (index) => ({
+        fontSize: index === 0 ? 24 : index === 1 ? 20 : 16 || index === 2 ? 18 : 16,
+        color: index === 0 ? 'white' : '#000000',
+        fontWeight: index === 0 ? 'bold' : 'normal',
+    }),
     buttonsContainer: {
         position: 'absolute',
         bottom: 0,

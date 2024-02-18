@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from "react-native";
-
-import "../services/Config";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, getFirestore, collection, addDoc, setDoc } from "firebase/firestore";
-
-// Import your logo image
-import logoImage from "../assets/icon.png"; // Replace with the actual path to your image
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import logoImage from "../assets/icon.png";
+import "../services/Config";
 
 export default function SignUp({ navigation }) {
   const [name, setName] = useState("");
@@ -18,7 +15,6 @@ export default function SignUp({ navigation }) {
   const db = getFirestore();
 
   const createUser = async () => {
-    // Input validation (optional but recommended)
     if (!name.trim()) {
       alert("Please enter your name.");
       return;
@@ -37,7 +33,6 @@ export default function SignUp({ navigation }) {
     }
 
     try {
-      // Create user using Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -52,8 +47,6 @@ export default function SignUp({ navigation }) {
       }
       await addDoc(collection(db, "users"), userData);
 
-      await setDoc(doc(db, "users", user.uid), userData);
-
       alert("Account created successfully!");
       navigation.navigate('Landing Screen');
     } catch (error) {
@@ -61,8 +54,7 @@ export default function SignUp({ navigation }) {
       const errorMessage = error.message;
 
       console.error("Error creating user:", errorCode, errorMessage);
-      // Handle signup errors appropriately (e.g., display error messages)
-      alert(errorMessage); // Example error message handling
+      alert(errorMessage);
     }
   };
 
@@ -120,9 +112,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   logo: {
-    width: 100, // Adjust the width and height as needed for your logo
+    width: 100,
     height: 100,
-    borderRadius: 50, // Make it circular by setting half of the width/height as the border radius
+    borderRadius: 50,
     marginBottom: 20,
   },
   title: {

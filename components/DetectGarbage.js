@@ -42,7 +42,6 @@ export default function DetectGarbage({ navigation }) {
     }
 
     const showLeaderboard = () => {
-        console.log("Leaderboard Button Clicked");
         navigation.navigate("Leaderboard");
     };
 
@@ -68,7 +67,6 @@ export default function DetectGarbage({ navigation }) {
 
     const predictImage = async () => {
         const model = await tf.loadLayersModel("model/model.json");
-        console.log("model loaded");
     };
 
     const retakePicture = () => {

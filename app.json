@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "garbage-segregation-app",
-    "slug": "garbage-segregation-app",
+    "slug": "GarbageApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,7 +25,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mursalfk.GarbageApp"
+      "bundleIdentifier": "com.mursalfk.garbage-segregation-app"
     },
     "android": {
       "adaptiveIcon": {
@@ -35,7 +35,8 @@
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "package": "com.mursalfk.GarbageApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
