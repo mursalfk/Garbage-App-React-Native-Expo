@@ -13,6 +13,13 @@ Key features of the app include:
 
 With its innovative approach to waste management and environmental education, the Waste Management System app empowers users to make sustainable choices and contribute to a cleaner, greener planet.
 
+## Technologies and Main Libraries
+
+- React Native: A JavaScript framework for building native mobile applications.
+- Firebase: A platform for building mobile and web applications developed by Google.
+- AsyncStorage: An asynchronous, unencrypted, persistent, key-value storage system for React Native.
+- Expo: A framework and platform for universal React applications.
+
 ## Screenshots
 
 <p align="center">
