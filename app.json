@@ -36,7 +36,12 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
+<<<<<<< HEAD
       "package": "com.mursalfk.GarbageApp"
+=======
+      "package": "com.example.GarbageClassifier",
+      "versionCode": 1
+>>>>>>> tfjs
     },
     "web": {
       "favicon": "./assets/favicon.png"
