@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Animated } from "react-native";
 import { db } from "../services/Config";
 import { collection, getDocs } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+
+const auth = getAuth();
 
 export default function Leaderboard({ navigation }) {
     const [leaderboardDataDB, setLeaderboardDataDB] = useState([]);
     const [animatedValues, setAnimatedValues] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
+    const flatListRef = useRef(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -22,8 +28,32 @@ export default function Leaderboard({ navigation }) {
                 console.error("Error fetching leaderboard data:", error);
             }
         };
+
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                getDoc(doc(db, "users", user.uid)).then((doc) => {
+                    if (doc.exists()) {
+                        setCurrentUser(doc.data());
+                        const index = leaderboardDataDB.findIndex(item => item.name === doc.data().name);
+                        if (index >= 0) {
+                            flatListRef.current.scrollToIndex({ animated: true, index });
+                        } else {
+                            // Scroll to the last item if the current user is not found
+                            flatListRef.current.scrollToEnd({ animated: true });
+                        }
+                    } else {
+                        console.log("No such document!");
+                    }
+                }).catch((error) => {
+                    console.log("Error getting document:", error);
+                });
+            }
+        });
+
         fetchData();
+        return () => unsubscribe();
     }, []);
+
 
     useEffect(() => {
         animateRows();
@@ -50,22 +80,25 @@ export default function Leaderboard({ navigation }) {
 
     return (
         <View style={styles.container}>
-            {/* Leaderboard title */}
             <Text style={styles.title}>Leaderboard</Text>
 
             {/* Leaderboard */}
-            <View style={styles.leaderboard}>
-                <FlatList
-                    data={leaderboardDataDB}
-                    renderItem={({ item, index }) => (
-                        <Animated.View style={[styles.leaderboardItem(index), { opacity: animatedValues[index] }]}>
-                            <Text style={styles.leaderboardText(index)}>{item.name}</Text>
-                            <Text style={styles.leaderboardText(index)}>{item.score}</Text>
-                        </Animated.View>
-                    )}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            </View>
+            <FlatList
+                ref={flatListRef}
+                data={leaderboardDataDB}
+                renderItem={({ item, index }) => (
+                    <Animated.View style={[styles.leaderboardItem(index), {
+                        opacity: animatedValues[index],
+                        borderColor: item.name === currentUser?.name ? '#aa0000' : 'transparent',
+                        borderLeftWidth: item.name === currentUser?.name ? 10 : 1,
+                    }]}>
+                        <Text style={styles.leaderboardText(index)}>{item.name === currentUser?.name ? item.name + '' : item.name}</Text>
+                        <Text style={styles.leaderboardText(index)}>{item.score}</Text>
+                    </Animated.View>
+                )}
+                keyExtractor={(item, index) => index.toString()}
+                contentContainerStyle={styles.leaderboard}
+            />
 
             {/* Buttons */}
             <View style={styles.buttonsContainer}>
@@ -87,13 +120,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     title: {
-        fontSize: 30,
+        fontSize: 20,
         fontWeight: 'bold',
         letterSpacing: 2,
         marginBottom: 20,
         marginTop: 20,
         textAlign: 'center',
-        backgroundColor: 'green',
+        backgroundColor: '#006400',
         width: '60%',
         alignSelf: 'center',
         padding: 10,
@@ -109,11 +142,11 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     leaderboard: {
-        flex: 1,
-        marginBottom: 20,
+        flexGrow: 1,
         width: '100%',
         paddingLeft: 10,
         paddingRight: 10,
+        marginBottom: 20,
     },
     leaderboardItem: (index) => ({
         flexDirection: 'row',
@@ -121,7 +154,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
-        backgroundColor: index === 0 ? '#006400' : index === 1 ? '#3CB371' : index === 2 ? '#90EE90' : '#d4d4d4',
+        backgroundColor: index === 0 ? 'green' : index === 1 ? '#3CB371' : index === 2 ? '#90EE90' : '#d4d4d4',
         borderRadius: 10,
         marginBottom: 10,
         paddingHorizontal: 15,
@@ -135,33 +168,34 @@ const styles = StyleSheet.create({
         elevation: 5,
     }),
     leaderboardText: (index) => ({
-        fontSize: index === 0 ? 24 : index === 1 ? 20 : 16 || index === 2 ? 18 : 16,
+        fontSize: index === 0 ? 20 : index === 1 ? 18 : 14 || index === 2 ? 16 : 14,
         color: index === 0 ? 'white' : '#000000',
         fontWeight: index === 0 ? 'bold' : 'normal',
     }),
     buttonsContainer: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
         flexDirection: 'row',
         paddingBottom: 20,
-        paddingTop: 20,
+        paddingTop: 10,
         borderTopWidth: 1,
         borderTopColor: '#ccc',
         paddingHorizontal: 20,
         backgroundColor: 'rgb(255, 255, 255)',
-        flexDirection: 'row',
         justifyContent: 'space-between',
     },
     button: {
         backgroundColor: 'green',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
         borderRadius: 5,
+        width: '45%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
     },
     buttonText: {
+        fontSize: 13,
         color: 'white',
         fontWeight: 'bold',
+        textAlign: 'center',
     },
 });

@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     image: {
-        width: '75%',
+        width: '86%',
         height: 92,
         resizeMode: 'cover',
     },

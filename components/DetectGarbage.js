@@ -11,10 +11,15 @@ import { Camera, CameraType } from "expo-camera";
 import * as tf from "@tensorflow/tfjs";
 import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import * as FileSystem from "expo-file-system";
+import { getAuth } from "firebase/auth";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { db } from "../services/Config";
+import { doc, setDoc, getDoc, addDoc, collection } from "firebase/firestore";
+
+const auth = getAuth();
 
 export default function DetectGarbage({ navigation, route }) {
     const { model } = route.params;
-    if (model) console.log("model received");
     const [type, setType] = useState(CameraType.back);
     const [permission, requestPermission] = Camera.useCameraPermissions();
     const [isLive, setIsLive] = useState(true);
@@ -22,6 +27,31 @@ export default function DetectGarbage({ navigation, route }) {
     const [capturedImage, setCapturedImage] = useState(null);
     const [predictResult, setPredictResult] = useState("");
     const [disposalInstructions, setDisposalInstructions] = useState("");
+    const [userData, setUserData] = useState(null);
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Get user's data
+                const userRef = doc(db, "users", user.uid);
+                getDoc(userRef)
+                    .then((docSnap) => {
+                        if (docSnap.exists()) {
+                            setUserData(docSnap.data());
+                        } else {
+                            setUserData(null);
+                        }
+                    })
+                    .catch((error) => {
+                        setUserData(null);
+                    });
+            } else {
+                setUserData(null);
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
 
     if (!permission) {
         return (
@@ -72,7 +102,6 @@ export default function DetectGarbage({ navigation, route }) {
     };
 
     const transformImageToTensor = async (uri) => {
-        console.log(uri);
         const img64 = await FileSystem.readAsStringAsync(uri, {
             encoding: FileSystem.EncodingType.Base64,
         });
@@ -86,7 +115,6 @@ export default function DetectGarbage({ navigation, route }) {
     };
 
     const predictImage = async (uri) => {
-        console.log("predict", uri);
         const imgTensor = await transformImageToTensor(uri);
         const classes = {
             0: "battery",
@@ -106,12 +134,24 @@ export default function DetectGarbage({ navigation, route }) {
         const value = predictions.dataSync();
         const predictedClass = value.indexOf(Math.max(...value))
         setPredictResult(classes[predictedClass].charAt(0).toUpperCase() + classes[predictedClass].slice(1));
-        
-        const disposalInstruction = generateDisposalInstruction(predictResult);
+
+        const disposalInstruction = generateDisposalInstruction(classes[predictedClass]);
         setDisposalInstructions(disposalInstruction)
-        
-        console.log("Instructions", disposalInstruction);
-        console.log("Predictions", classes[predictedClass]);
+        updateScore();
+    };
+
+    const updateScore = async () => {
+        if (userData) {
+            const userRef = doc(db, "users", userData.uid);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+                const userScore = userDoc.data().score;
+                const newScore = userScore + 10;
+                await setDoc(userRef, { score: newScore }, { merge: true });
+            }
+        }
+
+
     };
 
     // Function to generate disposal instructions based on garbage type
@@ -146,18 +186,14 @@ export default function DetectGarbage({ navigation, route }) {
 
     const retakePicture = () => {
         setPredictResult("");
+        setDisposalInstructions("");
         setCapturedImage(null);
         setIsLive(true);
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.predictionText}>
-                {predictResult ? "Predicted Garbage Type: " + predictResult : "Click Picture to Predict Garbage"}
-            </Text>
-            <Text style={styles.predictionText}>
-                {disposalInstructions ? "Disposal Instructions: " + disposalInstructions : ""}
-            </Text>
+
             {isLive ? (
                 <View style={styles.cameraContainer}>
                     <Camera
@@ -176,16 +212,22 @@ export default function DetectGarbage({ navigation, route }) {
                 </View>
             ) : (
                 <View style={styles.imageContainer}>
+                    <Text style={styles.predictionText}>
+                        {predictResult ? "Predicted Garbage Type: " + predictResult : "Predicted Garbage Type: Predicting..."}
+                    </Text>
                     <Image
                         source={{ uri: capturedImage }}
                         style={styles.capturedImage}
                     />
+                    <Text style={styles.predictionText}>
+                        {disposalInstructions ? "Disposal Instructions: " + disposalInstructions : "Disposal Instructions: Predicting..."}
+                    </Text>
                     <View style={styles.buttonsContainer}>
                         <TouchableOpacity
                             style={styles.retakeButton}
                             onPress={retakePicture}
                         >
-                            <Text style={styles.buttonText}>Retake</Text>
+                            <Text style={styles.buttonText}>Dispose More!</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -212,23 +254,25 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#fff",
-        justifyContent: "center",
-        alignItems: "center",
     },
     predictionText: {
         alignSelf: "center",
-        marginVertical: 10,
+        backgroundColor: "lightgrey",
+        padding: 10,
+        width: "100%",
+        textAlign: "center",
     },
     cameraContainer: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        width: "100%",
     },
     camera: {
-        flex: 1,
+        display: "flex",
+        height: "60%",
         width: "100%",
-        aspectRatio: 3/4, // Adjust the aspect ratio as needed
+        resizeMode: "cover",
+        justifyContent: "center",
     },
     buttonsContainer: {
         position: "absolute",
@@ -249,12 +293,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        width: "100%",
     },
     capturedImage: {
-        flex: 1,
+        display: "flex",
+        height: "60%",
         width: "100%",
-        aspectRatio: 3/4, // Adjust the aspect ratio as needed
+        justifyContent: "center",
     },
     retakeButton: {
         backgroundColor: "green",

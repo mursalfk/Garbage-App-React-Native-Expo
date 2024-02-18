@@ -57,10 +57,8 @@ export default function App() {
                         modelWeight13,
                     ])
                 );
-                console.log("model loaded");
                 setModel(model);
             } catch (e) {
-                console.log("[LOADING ERROR] info:", e);
             }
         };
         loadModel();
