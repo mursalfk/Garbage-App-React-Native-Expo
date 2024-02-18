@@ -8,7 +8,6 @@ import LandingScreen from "./components/LandingScreen";
 import HomePage from "./components/HomePage";
 import Leaderboard from "./components/Leaderboard";
 import DetectGarbage from "./components/DetectGarbage";
-import { useEffect, useState } from "react";
 import TensorFlowInitializer from "./TensorFlowInitializer";
 import { bundleResourceIO } from "@tensorflow/tfjs-react-native";
 import * as tf from "@tensorflow/tfjs";
@@ -86,7 +85,11 @@ export default function App() {
                 <Stack.Screen name="Landing Screen" component={LandingScreen} />
                 <Stack.Screen name="HomePage" component={HomePage} />
                 <Stack.Screen name="Leaderboard" component={Leaderboard} />
-                <Stack.Screen name="Detect Garbage" component={DetectGarbage} initialParams={{ model }} />
+                <Stack.Screen
+                    name="Detect Garbage"
+                    component={DetectGarbage}
+                    initialParams={{ model }}
+                />
                 <Stack.Screen name="Login" component={Login} />
                 <Stack.Screen name="SignUp" component={SignUp} />
                 <Stack.Screen name="Credits" component={Credits} />
