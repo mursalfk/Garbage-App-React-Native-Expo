@@ -39,7 +39,6 @@ export default function Leaderboard({ navigation }) {
                         if (index >= 0) {
                             flatListRef.current.scrollToIndex({ animated: true, index });
                         } else {
-                            // Scroll to the last item if the current user is not found
                             flatListRef.current.scrollToEnd({ animated: true });
                         }
                     } else {
@@ -82,8 +81,6 @@ export default function Leaderboard({ navigation }) {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Leaderboard</Text>
-
-            {/* Leaderboard */}
             <FlatList
                 ref={flatListRef}
                 data={leaderboardDataDB}
@@ -101,7 +98,6 @@ export default function Leaderboard({ navigation }) {
                 contentContainerStyle={styles.leaderboard}
             />
 
-            {/* Buttons */}
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.button} onPress={disposeGarbage}>
                     <Text style={styles.buttonText}>Dispose Garbage</Text>

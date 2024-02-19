@@ -30,13 +30,12 @@ export default function DetectGarbage({ navigation }) {
     const [predictResult, setPredictResult] = useState("");
     const [disposalInstructions, setDisposalInstructions] = useState("");
     const [userData, setUserData] = useState(null);
-    const [model, setModel] = useState(null); // State to hold the model
-    const [modelLoaded, setModelLoaded] = useState(false); // State to track if the model is loaded
+    const [model, setModel] = useState(null); 
+    const [modelLoaded, setModelLoaded] = useState(false); 
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
-                // Get user's data
                 const userRef = doc(db, "users", user.uid);
                 getDoc(userRef)
                     .then((docSnap) => {
@@ -80,7 +79,7 @@ export default function DetectGarbage({ navigation }) {
                     ])
                 );
                 setModel(model);
-                setModelLoaded(true); // Set modelLoaded to true once the model is loaded
+                setModelLoaded(true);
                 console.log("Model loaded successfully");
             } catch (e) {
                 console.error("Error loading model:", e);
@@ -194,7 +193,6 @@ export default function DetectGarbage({ navigation }) {
         }
     };
 
-    // Function to generate disposal instructions based on garbage type
     const generateDisposalInstruction = (garbageClass) => {
         switch (garbageClass.toLowerCase()) {
             case "battery":
@@ -233,7 +231,7 @@ export default function DetectGarbage({ navigation }) {
 
     return (
         <View style={styles.container}>
-            {modelLoaded ? ( // If modelLoaded is true, render the camera view
+            {modelLoaded ? ( 
                 isLive ? (
                     <View style={styles.cameraContainer}>
                         <Camera
@@ -245,7 +243,7 @@ export default function DetectGarbage({ navigation }) {
                             <TouchableOpacity
                                 style={styles.clickPhotoButton}
                                 onPress={takePicture}
-                                disabled={!modelLoaded} // Disable button if model is not loaded
+                                disabled={!modelLoaded}
                             >
                                 <Text style={styles.buttonText}>Click Picture</Text>
                             </TouchableOpacity>
@@ -273,7 +271,7 @@ export default function DetectGarbage({ navigation }) {
                         </View>
                     </View>
                 )
-            ) : ( // If model is not loaded, render a loading indicator
+            ) : ( 
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="green" />
                     <Text>Initializing Model...</Text>

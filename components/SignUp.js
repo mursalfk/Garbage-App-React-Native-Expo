@@ -11,7 +11,7 @@ export default function SignUp({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [signingUp, setSigningUp] = useState(false); // State variable to track sign-up process
+  const [signingUp, setSigningUp] = useState(false); 
 
   const auth = getAuth()
   const db = getFirestore();
@@ -35,7 +35,7 @@ export default function SignUp({ navigation }) {
     }
 
     try {
-      setSigningUp(true); // Set signingUp to true when sign-up process starts
+      setSigningUp(true);
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -57,7 +57,7 @@ export default function SignUp({ navigation }) {
       console.error("Error creating user:", errorMessage);
       alert(errorMessage);
     } finally {
-      setSigningUp(false); // Set signingUp back to false when sign-up process ends
+      setSigningUp(false);
     }
   };
 
@@ -100,7 +100,7 @@ export default function SignUp({ navigation }) {
         >Sign In</Text></Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={createUser} disabled={signingUp}>
-        {signingUp ? ( // Show loader if signing up
+        {signingUp ? ( 
           <ActivityIndicator size="small" color="#ffffff" />
         ) : (
           <Text style={styles.buttonText}>Create</Text>
