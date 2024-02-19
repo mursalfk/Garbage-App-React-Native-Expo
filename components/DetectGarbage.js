@@ -6,6 +6,7 @@ import {
     StyleSheet,
     TouchableOpacity,
     Image,
+    Vibration,
     ActivityIndicator,
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
@@ -57,8 +58,10 @@ export default function DetectGarbage({ navigation }) {
     }, []);
 
     useEffect(() => {
-        const loadModel = async () => {
+        const initializeTensorFlow = async () => {
             try {
+                await tf.ready();
+                console.log("TensorFlow.js is ready");
                 const model = await tf.loadGraphModel(
                     bundleResourceIO(require("../model/model.json"), [
                         require("../model/group1-shard1of13.bin"),
@@ -83,8 +86,9 @@ export default function DetectGarbage({ navigation }) {
                 console.error("Error loading model:", e);
             }
         };
-        loadModel();
+        initializeTensorFlow();
     }, []);
+
 
     if (!permission) {
         return (
@@ -133,6 +137,7 @@ export default function DetectGarbage({ navigation }) {
             setCapturedImage(data.uri);
             setIsLive(false);
             predictImage(data.uri);
+            Vibration.vibrate(); 
         }
     };
 
@@ -173,6 +178,7 @@ export default function DetectGarbage({ navigation }) {
         const disposalInstruction = generateDisposalInstruction(classes[predictedClass]);
         setDisposalInstructions(disposalInstruction)
         updateScore();
+        Vibration.vibrate(); 
     };
 
     const updateScore = async () => {
@@ -186,8 +192,6 @@ export default function DetectGarbage({ navigation }) {
                 alert("10 Points Added!");
             }
         }
-
-
     };
 
     // Function to generate disposal instructions based on garbage type
