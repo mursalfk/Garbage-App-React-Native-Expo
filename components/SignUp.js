@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import logoImage from "../assets/icon.png";
@@ -11,6 +11,7 @@ export default function SignUp({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [signingUp, setSigningUp] = useState(false); // State variable to track sign-up process
 
   const auth = getAuth()
   const db = getFirestore();
@@ -34,6 +35,7 @@ export default function SignUp({ navigation }) {
     }
 
     try {
+      setSigningUp(true); // Set signingUp to true when sign-up process starts
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -51,11 +53,11 @@ export default function SignUp({ navigation }) {
       alert("Account created successfully!");
       navigation.navigate('Landing Screen');
     } catch (error) {
-      const errorCode = error.code;
       const errorMessage = error.message;
-
-      console.error("Error creating user:", errorCode, errorMessage);
+      console.error("Error creating user:", errorMessage);
       alert(errorMessage);
+    } finally {
+      setSigningUp(false); // Set signingUp back to false when sign-up process ends
     }
   };
 
@@ -97,8 +99,12 @@ export default function SignUp({ navigation }) {
           style={styles.loginText}
         >Sign In</Text></Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={createUser}>
-        <Text style={styles.buttonText}>Create</Text>
+      <TouchableOpacity style={styles.button} onPress={createUser} disabled={signingUp}>
+        {signingUp ? ( // Show loader if signing up
+          <ActivityIndicator size="small" color="#ffffff" />
+        ) : (
+          <Text style={styles.buttonText}>Create</Text>
+        )}
       </TouchableOpacity>
       <StatusBar hidden={true} />
     </View>

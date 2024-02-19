@@ -6,6 +6,7 @@ import {
     StyleSheet,
     TouchableOpacity,
     Image,
+    ActivityIndicator,
 } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import * as tf from "@tensorflow/tfjs";
@@ -19,8 +20,7 @@ import { StatusBar } from 'expo-status-bar';
 
 const auth = getAuth();
 
-export default function DetectGarbage({ navigation, route }) {
-    const { model } = route.params;
+export default function DetectGarbage({ navigation }) {
     const [type, setType] = useState(CameraType.back);
     const [permission, requestPermission] = Camera.useCameraPermissions();
     const [isLive, setIsLive] = useState(true);
@@ -29,6 +29,8 @@ export default function DetectGarbage({ navigation, route }) {
     const [predictResult, setPredictResult] = useState("");
     const [disposalInstructions, setDisposalInstructions] = useState("");
     const [userData, setUserData] = useState(null);
+    const [model, setModel] = useState(null); // State to hold the model
+    const [modelLoaded, setModelLoaded] = useState(false); // State to track if the model is loaded
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -52,6 +54,36 @@ export default function DetectGarbage({ navigation, route }) {
         });
 
         return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        const loadModel = async () => {
+            try {
+                const model = await tf.loadGraphModel(
+                    bundleResourceIO(require("../model/model.json"), [
+                        require("../model/group1-shard1of13.bin"),
+                        require("../model/group1-shard2of13.bin"),
+                        require("../model/group1-shard3of13.bin"),
+                        require("../model/group1-shard4of13.bin"),
+                        require("../model/group1-shard5of13.bin"),
+                        require("../model/group1-shard6of13.bin"),
+                        require("../model/group1-shard7of13.bin"),
+                        require("../model/group1-shard8of13.bin"),
+                        require("../model/group1-shard9of13.bin"),
+                        require("../model/group1-shard10of13.bin"),
+                        require("../model/group1-shard11of13.bin"),
+                        require("../model/group1-shard12of13.bin"),
+                        require("../model/group1-shard13of13.bin"),
+                    ])
+                );
+                setModel(model);
+                setModelLoaded(true); // Set modelLoaded to true once the model is loaded
+                console.log("Model loaded successfully");
+            } catch (e) {
+                console.error("Error loading model:", e);
+            }
+        };
+        loadModel();
     }, []);
 
     if (!permission) {
@@ -196,43 +228,50 @@ export default function DetectGarbage({ navigation, route }) {
 
     return (
         <View style={styles.container}>
-
-            {isLive ? (
-                <View style={styles.cameraContainer}>
-                    <Camera
-                        style={styles.camera}
-                        type={type}
-                        ref={cameraRef}
-                    ></Camera>
-                    <View style={styles.buttonsContainer}>
-                        <TouchableOpacity
-                            style={styles.clickPhotoButton}
-                            onPress={takePicture}
-                        >
-                            <Text style={styles.buttonText}>Click Picture</Text>
-                        </TouchableOpacity>
+            {modelLoaded ? ( // If modelLoaded is true, render the camera view
+                isLive ? (
+                    <View style={styles.cameraContainer}>
+                        <Camera
+                            style={styles.camera}
+                            type={type}
+                            ref={cameraRef}
+                        ></Camera>
+                        <View style={styles.buttonsContainer}>
+                            <TouchableOpacity
+                                style={styles.clickPhotoButton}
+                                onPress={takePicture}
+                                disabled={!modelLoaded} // Disable button if model is not loaded
+                            >
+                                <Text style={styles.buttonText}>Click Picture</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-            ) : (
-                <View style={styles.imageContainer}>
-                    <Text style={styles.predictionText}>
-                        {predictResult ? "Predicted Garbage Type: " + predictResult : "Predicted Garbage Type: Predicting..."}
-                    </Text>
-                    <Image
-                        source={{ uri: capturedImage }}
-                        style={styles.capturedImage}
-                    />
-                    <Text style={styles.predictionText}>
-                        {disposalInstructions ? "Disposal Instructions: " + disposalInstructions : "Disposal Instructions: Predicting..."}
-                    </Text>
-                    <View style={styles.buttonsContainer}>
-                        <TouchableOpacity
-                            style={styles.retakeButton}
-                            onPress={retakePicture}
-                        >
-                            <Text style={styles.buttonText}>Dispose More!</Text>
-                        </TouchableOpacity>
+                ) : (
+                    <View style={styles.imageContainer}>
+                        <Text style={styles.predictionText}>
+                            {predictResult ? "Predicted Garbage Type: " + predictResult : "Predicted Garbage Type: Predicting..."}
+                        </Text>
+                        <Image
+                            source={{ uri: capturedImage }}
+                            style={styles.capturedImage}
+                        />
+                        <Text style={styles.predictionText}>
+                            {disposalInstructions ? "Disposal Instructions: " + disposalInstructions : "Disposal Instructions: Predicting..."}
+                        </Text>
+                        <View style={styles.buttonsContainer}>
+                            <TouchableOpacity
+                                style={styles.retakeButton}
+                                onPress={retakePicture}
+                            >
+                                <Text style={styles.buttonText}>Dispose More!</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
+                )
+            ) : ( // If model is not loaded, render a loading indicator
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="green" />
+                    <Text>Initializing Model...</Text>
                 </View>
             )}
             <View style={styles.bottomButtonsContainer}>
@@ -258,6 +297,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#fff",
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
     },
     predictionText: {
         alignSelf: "center",
