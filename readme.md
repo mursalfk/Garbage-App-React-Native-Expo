@@ -27,7 +27,7 @@ With its innovative approach to waste management and environmental education, th
 </p>
 
 <p align="center">
-  <img src="AppScreenshots/HomePage.png" width="150"> <img src="AppScreenshots/DisposeGarbageScreen.png" width="150"> 
+  <img src="AppScreenshots/HomePage.png" width="150"> <img src="AppScreenshots/DisposeGarbageScreen.jpg" width="150"> <img src="AppScreenshots/Predicting.jpg" width="150"> <img src="AppScreenshots/Prediction.jpg" width="150">
   <img src="AppScreenshots/LeaderBoard.png" width="150"> <img src="AppScreenshots/Credits.png" width="150"> 
 </p>
 
