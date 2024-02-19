@@ -183,6 +183,7 @@ export default function DetectGarbage({ navigation }) {
                 const userScore = userDoc.data().score;
                 const newScore = userScore + 10;
                 await setDoc(userRef, { score: newScore }, { merge: true });
+                alert("10 Points Added!");
             }
         }
 
