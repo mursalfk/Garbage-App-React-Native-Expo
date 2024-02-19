@@ -58,6 +58,7 @@ export default function App() {
                     ])
                 );
                 setModel(model);
+                console.log("Model loaded successfully");
             } catch (e) {
             }
         };
@@ -79,7 +80,11 @@ export default function App() {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator>
+            <Stack.Navigator
+                screenOptions={{
+                    headerShown: false,
+                }}
+            >
                 <Stack.Screen name="Landing Screen" component={LandingScreen} />
                 <Stack.Screen name="HomePage" component={HomePage} />
                 <Stack.Screen name="Leaderboard" component={Leaderboard} />

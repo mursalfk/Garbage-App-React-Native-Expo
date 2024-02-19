@@ -15,6 +15,7 @@ import { getAuth } from "firebase/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { db } from "../services/Config";
 import { doc, setDoc, getDoc, addDoc, collection } from "firebase/firestore";
+import { StatusBar } from 'expo-status-bar';
 
 const auth = getAuth();
 
@@ -61,6 +62,7 @@ export default function DetectGarbage({ navigation, route }) {
                     title="Request Camera Permission"
                     onPress={requestPermission}
                 />
+                <StatusBar hidden={true} />
             </View>
         );
     }
@@ -73,6 +75,7 @@ export default function DetectGarbage({ navigation, route }) {
                     title="Request Camera Permission"
                     onPress={requestPermission}
                 />
+                <StatusBar hidden={true} />
             </View>
         );
     }
@@ -246,6 +249,7 @@ export default function DetectGarbage({ navigation, route }) {
                     <Text style={styles.buttonText}>Back to Homepage</Text>
                 </TouchableOpacity>
             </View>
+            <StatusBar hidden={true} />
         </View>
     );
 }

@@ -4,6 +4,7 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import logoImage from "../assets/icon.png";
 import "../services/Config";
+import { StatusBar } from 'expo-status-bar';
 
 export default function SignUp({ navigation }) {
   const [name, setName] = useState("");
@@ -99,6 +100,7 @@ export default function SignUp({ navigation }) {
       <TouchableOpacity style={styles.button} onPress={createUser}>
         <Text style={styles.buttonText}>Create</Text>
       </TouchableOpacity>
+      <StatusBar hidden={true} />
     </View>
   );
 }

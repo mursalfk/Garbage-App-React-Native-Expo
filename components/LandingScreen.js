@@ -1,5 +1,6 @@
 import React from "react";
 import { TouchableOpacity, View, Image, StyleSheet, Text } from "react-native";
+import { StatusBar } from 'expo-status-bar';
 
 import landingImage from "../assets/landing-icon.png";
 
@@ -22,9 +23,14 @@ export default function LandingScreen({ navigation }) {
                     <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>
             </View>
+            <StatusBar hidden={true} />
         </View>
     );
 }
+
+LandingScreen.navigationOptions = {
+    headerShown: false,
+};
 
 const styles = StyleSheet.create({
     container: {

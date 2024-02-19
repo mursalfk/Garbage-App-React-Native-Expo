@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity, Linking } from "react-native";
+import { StatusBar } from 'expo-status-bar';
 
 export default function Credits({ navigation }) {
     const openLinkedInProfile = (profileUrl) => {
@@ -8,51 +9,38 @@ export default function Credits({ navigation }) {
 
     return (
         <View style={styles.container}>
-            {/* Image */}
             <Image
                 source={require('../assets/Sapienza_Roma_Logo_Complete.png')}
                 style={styles.image}
             />
-            {/* Title */}
             <Text style={styles.title}>Project by:</Text>
-            {/* Students List */}
             <View style={styles.studentContainer}>
-                {/* Student 1 */}
                 <View style={styles.studentRow}>
-                    {/* Student Image */}
                     <Image
                         source={require('../assets/Mursal.png')}
                         style={styles.studentImage}
                     />
-                    {/* Student Info */}
                     <View style={styles.studentInfo}>
                         <Text style={styles.studentName}>Mursal Furqan Kumbhar</Text>
                         <Text style={styles.rollNumber}>Matricola: 2047419</Text>
                     </View>
-                    {/* LinkedIn Icon */}
                     <TouchableOpacity onPress={() => openLinkedInProfile('https://www.linkedin.com/in/mursalfurqan/')} style={styles.iconContainer}>
-                        {/* Your LinkedIn profile icon */}
                         <Image
                             source={require('../assets/linkedin-icon.png')}
                             style={styles.icon}
                         />
                     </TouchableOpacity>
                 </View>
-                {/* Student 2 */}
                 <View style={styles.studentRow}>
-                    {/* Student Image */}
                     <Image
                         source={require('../assets/Srinjan.png')}
                         style={styles.studentImage}
                     />
-                    {/* Student Info */}
                     <View style={styles.studentInfo}>
                         <Text style={styles.studentName}>Srinjan Ghosh</Text>
                         <Text style={styles.rollNumber}>Matricola: 2053796</Text>
                     </View>
-                    {/* LinkedIn Icon */}
                     <TouchableOpacity onPress={() => openLinkedInProfile('https://www.linkedin.com/in/srinjan-ghosh-09973a195/')} style={styles.iconContainer}>
-                        {/* Your LinkedIn profile icon */}
                         <Image
                             source={require('../assets/linkedin-icon.png')}
                             style={styles.icon}
@@ -60,10 +48,10 @@ export default function Credits({ navigation }) {
                     </TouchableOpacity>
                 </View>
             </View>
-            {/* Back Button */}
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('HomePage')}>
                 <Text style={styles.backButtonText}>Back</Text>
             </TouchableOpacity>
+            <StatusBar hidden={true} />
         </View>
     );
 }

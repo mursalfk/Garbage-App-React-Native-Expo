@@ -4,6 +4,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db } from "../services/Config";
 import { collection, getDocs } from "firebase/firestore";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StatusBar } from 'expo-status-bar';
 
 const auth = getAuth();
 
@@ -74,6 +75,7 @@ export default function HomePage({ navigation, route }) {
                     <Text style={styles.buttonText}>Logout</Text>
                 </TouchableOpacity>
             </View>
+            <StatusBar hidden={true} />
         </View>
     );
 }

@@ -4,6 +4,7 @@ import { db } from "../services/Config";
 import { collection, getDocs } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
+import { StatusBar } from 'expo-status-bar';
 
 const auth = getAuth();
 
@@ -109,6 +110,7 @@ export default function Leaderboard({ navigation }) {
                     <Text style={styles.buttonText}>Back to Homepage</Text>
                 </TouchableOpacity>
             </View>
+            <StatusBar hidden={true} />
         </View>
     );
 }

@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import "../services/Config";
 import logoImage from "../assets/icon.png";
+import { StatusBar } from 'expo-status-bar';
 
 const auth = getAuth();
 
@@ -71,6 +72,7 @@ export default function Login({ navigation }) {
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
+      <StatusBar hidden={true} />
     </View>
   );
 }
